@@ -324,21 +324,35 @@ const NotificationsSheet = ({ onClose }) => (
 );
 
 const TourTooltip = ({ text, position, color = "bg-gray-900", arrow = "right", side = "left" }) => {
-    // Determine arrow border color based on the color prop
-    const arrowColorClass = color === "bg-gray-900" ? "border-gray-900"
-        : color === "bg-blue-600" ? "border-blue-600"
-        : color === "bg-purple-600" ? "border-purple-600"
-        : color === "bg-pink-600" ? "border-pink-600"
-        : color === "bg-gray-800" ? "border-gray-800"
-        : "border-gray-900";
+    // Position tooltip outside the phone frame
+    const sideClass = side === 'left' ? 'right-full mr-4' : 'left-full ml-4';
+
+    // Arrow colors for different tooltip colors
+    const getArrowClass = () => {
+        if (arrow === 'right') {
+            // Arrow pointing right (for left-side tooltips)
+            const borderColor = color === "bg-blue-600" ? "border-l-blue-600"
+                : color === "bg-purple-600" ? "border-l-purple-600"
+                : color === "bg-pink-600" ? "border-l-pink-600"
+                : color === "bg-gray-800" ? "border-l-gray-800"
+                : "border-l-gray-900";
+            return `absolute -right-2 top-1/2 -translate-y-1/2 w-0 h-0 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent border-l-[8px] ${borderColor}`;
+        } else {
+            // Arrow pointing left (for right-side tooltips)
+            const borderColor = color === "bg-blue-600" ? "border-r-blue-600"
+                : color === "bg-purple-600" ? "border-r-purple-600"
+                : color === "bg-pink-600" ? "border-r-pink-600"
+                : color === "bg-gray-800" ? "border-r-gray-800"
+                : "border-r-gray-900";
+            return `absolute -left-2 top-1/2 -translate-y-1/2 w-0 h-0 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent border-r-[8px] ${borderColor}`;
+        }
+    };
 
     return (
-        <div className={`absolute ${position} z-[200] max-w-[220px] animate-in fade-in zoom-in-95 duration-500 pointer-events-none ${side === 'left' ? 'right-full mr-6' : 'left-full ml-6'}`}>
+        <div className={`absolute ${position} ${sideClass} z-[300] w-[200px] animate-in fade-in zoom-in-95 duration-500 pointer-events-none`}>
             <div className={`${color} text-white text-sm font-medium px-4 py-3 rounded-2xl shadow-2xl relative`}>
                 {text}
-                {/* Arrow pointing towards phone */}
-                {arrow === 'right' && <div className={`absolute -right-2 top-1/2 -translate-y-1/2 w-0 h-0 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent border-l-[8px] ${arrowColorClass.replace('border-', 'border-l-')}`}></div>}
-                {arrow === 'left' && <div className={`absolute -left-2 top-1/2 -translate-y-1/2 w-0 h-0 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent border-r-[8px] ${arrowColorClass.replace('border-', 'border-r-')}`}></div>}
+                <div className={getArrowClass()}></div>
             </div>
         </div>
     );
@@ -1166,7 +1180,7 @@ export default function DatingApp() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-200 font-sans text-gray-900 sm:py-20">
+    <div className="flex justify-center items-center min-h-screen bg-gray-200 font-sans text-gray-900 sm:py-20 overflow-x-hidden">
       <style>{`
         /* Custom Pink Scrollbar */
         ::-webkit-scrollbar {
@@ -1185,48 +1199,10 @@ export default function DatingApp() {
           background: #f9a8d4;
         }
       `}</style>
-
-      {/* Wrapper for phone + external tooltips */}
-      <div className="relative flex justify-center items-center">
-        {/* --- EXTERNAL TOUR TOOLTIPS --- */}
-        {/* Home Tour */}
-        {showHomeTour && (
-            <>
-                <TourTooltip text="Switch between card stack and map view to find matches!" position="top-16" side="left" arrow="right" color="bg-blue-600" />
-                <TourTooltip text="Swipe right to like, left to pass. It's that simple!" position="top-1/3" side="left" arrow="right" color="bg-gray-900" />
-                <TourTooltip text="View your notifications here" position="top-16" side="right" arrow="left" color="bg-gray-900" />
-                <TourTooltip text="Tap the info button to learn more about your match" position="top-1/2" side="right" arrow="left" color="bg-pink-600" />
-                <TourTooltip text="Use the navigation bar to switch between pages!" position="bottom-24" side="left" arrow="right" color="bg-purple-600" />
-            </>
-        )}
-
-        {/* Matches Tour */}
-        {showMatchesTour && (
-            <>
-                <TourTooltip text="Wow you've already got some matches!" position="top-36" side="left" arrow="right" color="bg-purple-600" />
-                <TourTooltip text="You have new messages! Tap to start chatting!" position="top-64" side="right" arrow="left" color="bg-pink-600" />
-            </>
-        )}
-
-        {/* Chat Tour */}
-        {showChatTour && (
-            <>
-                 <TourTooltip text="Customise your font, background, and personalise your chat!" position="top-20" side="right" arrow="left" color="bg-purple-600" />
-                 <TourTooltip text="Use the date planner to plan a date!" position="bottom-24" side="left" arrow="right" color="bg-pink-600" />
-                 <TourTooltip text="Go on, don't be shy - send them a message!" position="bottom-24" side="right" arrow="left" color="bg-gray-800" />
-            </>
-        )}
-
-        {/* Map Tour */}
-        {showMapTour && (
-            <>
-                <TourTooltip text="Explore profiles near you on the map!" position="top-24" side="left" arrow="right" color="bg-blue-600" />
-                <TourTooltip text="Tap a pin to see who it is!" position="top-1/2" side="right" arrow="left" color="bg-gray-900" />
-            </>
-        )}
-
+      {/* Phone wrapper - allows tooltips to overflow */}
+      <div className="relative">
         {/* Phone Frame */}
-        <div className="w-full max-w-[400px] h-[850px] bg-white sm:rounded-[45px] shadow-2xl overflow-hidden flex flex-col relative sm:border-[8px] sm:border-gray-900 ring-1 ring-black/5">
+        <div className="w-[400px] h-[850px] bg-white sm:rounded-[45px] shadow-2xl overflow-hidden flex flex-col relative sm:border-[8px] sm:border-gray-900 ring-1 ring-black/5">
         
         {/* Modals & Overlays */}
         {showConfetti && <Confetti />}
@@ -1652,8 +1628,45 @@ export default function DatingApp() {
         )}
         </div>
         {/* End Phone Frame */}
+
+        {/* --- TOUR TOOLTIPS (External - appear outside phone frame) --- */}
+        {/* Home Tour */}
+        {showHomeTour && (
+            <>
+                <TourTooltip text="Switch between card stack and map view to find matches!" position="top-20 left-0" side="left" arrow="right" color="bg-blue-600" />
+                <TourTooltip text="Swipe right to like, left to pass!" position="top-1/3 left-0" side="left" arrow="right" color="bg-gray-900" />
+                <TourTooltip text="View your notifications here" position="top-20 left-0" side="right" arrow="left" color="bg-gray-900" />
+                <TourTooltip text="Tap the info button to learn more about your match" position="top-1/2 left-0" side="right" arrow="left" color="bg-pink-600" />
+                <TourTooltip text="Use the navigation bar to switch between pages!" position="bottom-28 left-0" side="left" arrow="right" color="bg-purple-600" />
+            </>
+        )}
+
+        {/* Matches Tour */}
+        {showMatchesTour && (
+            <>
+                <TourTooltip text="Wow you've already got some matches!" position="top-40 left-0" side="left" arrow="right" color="bg-purple-600" />
+                <TourTooltip text="You have new messages! Tap to start chatting!" position="top-64 left-0" side="right" arrow="left" color="bg-pink-600" />
+            </>
+        )}
+
+        {/* Chat Tour */}
+        {showChatTour && (
+            <>
+                 <TourTooltip text="Customise your font, background, and personalise your chat!" position="top-24 left-0" side="right" arrow="left" color="bg-purple-600" />
+                 <TourTooltip text="Use the date planner to plan a date!" position="bottom-28 left-0" side="left" arrow="right" color="bg-pink-600" />
+                 <TourTooltip text="Go on, don't be shy - send them a message!" position="bottom-28 left-0" side="right" arrow="left" color="bg-gray-800" />
+            </>
+        )}
+
+        {/* Map Tour */}
+        {showMapTour && (
+            <>
+                <TourTooltip text="Explore profiles near you on the map!" position="top-28 left-0" side="left" arrow="right" color="bg-blue-600" />
+                <TourTooltip text="Tap a pin to see who it is!" position="top-1/2 left-0" side="right" arrow="left" color="bg-gray-900" />
+            </>
+        )}
       </div>
-      {/* End Wrapper */}
+      {/* End Phone Wrapper */}
     </div>
   );
 }
