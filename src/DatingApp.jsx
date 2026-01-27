@@ -323,18 +323,26 @@ const NotificationsSheet = ({ onClose }) => (
     </div>
 );
 
-const TourTooltip = ({ text, position, color = "bg-gray-900", arrow = "left" }) => (
-    <div className={`absolute ${position} z-[200] max-w-[200px] animate-in fade-in zoom-in-95 duration-500`}>
-        <div className={`${color} text-white text-xs font-bold px-4 py-3 rounded-2xl shadow-xl relative`}>
-            {text}
-            {/* Arrow */}
-            {arrow === 'bottom' && <div className={`absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-${color.replace('bg-', '')}`}></div>}
-            {arrow === 'top' && <div className={`absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[8px] border-b-${color.replace('bg-', '')}`}></div>}
-            {arrow === 'left' && <div className={`absolute -left-2 top-1/2 -translate-y-1/2 w-0 h-0 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent border-r-[8px] border-r-${color.replace('bg-', '')}`}></div>}
-            {arrow === 'right' && <div className={`absolute -right-2 top-1/2 -translate-y-1/2 w-0 h-0 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent border-l-[8px] border-l-${color.replace('bg-', '')}`}></div>}
+const TourTooltip = ({ text, position, color = "bg-gray-900", arrow = "right", side = "left" }) => {
+    // Determine arrow border color based on the color prop
+    const arrowColorClass = color === "bg-gray-900" ? "border-gray-900"
+        : color === "bg-blue-600" ? "border-blue-600"
+        : color === "bg-purple-600" ? "border-purple-600"
+        : color === "bg-pink-600" ? "border-pink-600"
+        : color === "bg-gray-800" ? "border-gray-800"
+        : "border-gray-900";
+
+    return (
+        <div className={`absolute ${position} z-[200] max-w-[220px] animate-in fade-in zoom-in-95 duration-500 pointer-events-none ${side === 'left' ? 'right-full mr-6' : 'left-full ml-6'}`}>
+            <div className={`${color} text-white text-sm font-medium px-4 py-3 rounded-2xl shadow-2xl relative`}>
+                {text}
+                {/* Arrow pointing towards phone */}
+                {arrow === 'right' && <div className={`absolute -right-2 top-1/2 -translate-y-1/2 w-0 h-0 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent border-l-[8px] ${arrowColorClass.replace('border-', 'border-l-')}`}></div>}
+                {arrow === 'left' && <div className={`absolute -left-2 top-1/2 -translate-y-1/2 w-0 h-0 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent border-r-[8px] ${arrowColorClass.replace('border-', 'border-r-')}`}></div>}
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 const Confetti = () => (
   <div className="absolute inset-0 pointer-events-none z-[60] overflow-hidden">
@@ -1166,18 +1174,59 @@ export default function DatingApp() {
           height: 6px;
         }
         ::-webkit-scrollbar-track {
-          background: #fdf2f8; 
+          background: #fdf2f8;
           border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb {
-          background: #fbcfe8; 
+          background: #fbcfe8;
           border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-          background: #f9a8d4; 
+          background: #f9a8d4;
         }
       `}</style>
-      <div className="w-full max-w-[400px] h-[850px] bg-white sm:rounded-[45px] shadow-2xl overflow-hidden flex flex-col relative sm:border-[8px] sm:border-gray-900 ring-1 ring-black/5">
+
+      {/* Wrapper for phone + external tooltips */}
+      <div className="relative">
+        {/* --- EXTERNAL TOUR TOOLTIPS --- */}
+        {/* Home Tour */}
+        {showHomeTour && (
+            <>
+                <TourTooltip text="Switch between card stack and map view to find matches!" position="top-16" side="left" arrow="right" color="bg-blue-600" />
+                <TourTooltip text="Swipe right to like, left to pass. It's that simple!" position="top-1/3" side="left" arrow="right" color="bg-gray-900" />
+                <TourTooltip text="View your notifications here" position="top-16" side="right" arrow="left" color="bg-gray-900" />
+                <TourTooltip text="Tap the info button to learn more about your match" position="top-1/2" side="right" arrow="left" color="bg-pink-600" />
+                <TourTooltip text="Use the navigation bar to switch between pages!" position="bottom-24" side="left" arrow="right" color="bg-purple-600" />
+            </>
+        )}
+
+        {/* Matches Tour */}
+        {showMatchesTour && (
+            <>
+                <TourTooltip text="Wow you've already got some matches!" position="top-36" side="left" arrow="right" color="bg-purple-600" />
+                <TourTooltip text="You have new messages! Tap to start chatting!" position="top-64" side="right" arrow="left" color="bg-pink-600" />
+            </>
+        )}
+
+        {/* Chat Tour */}
+        {showChatTour && (
+            <>
+                 <TourTooltip text="Customise your font, background, and personalise your chat!" position="top-20" side="right" arrow="left" color="bg-purple-600" />
+                 <TourTooltip text="Use the date planner to plan a date!" position="bottom-24" side="left" arrow="right" color="bg-pink-600" />
+                 <TourTooltip text="Go on, don't be shy - send them a message!" position="bottom-24" side="right" arrow="left" color="bg-gray-800" />
+            </>
+        )}
+
+        {/* Map Tour */}
+        {showMapTour && (
+            <>
+                <TourTooltip text="Explore profiles near you on the map!" position="top-24" side="left" arrow="right" color="bg-blue-600" />
+                <TourTooltip text="Tap a pin to see who it is!" position="top-1/2" side="right" arrow="left" color="bg-gray-900" />
+            </>
+        )}
+
+        {/* Phone Frame */}
+        <div className="w-full max-w-[400px] h-[850px] bg-white sm:rounded-[45px] shadow-2xl overflow-hidden flex flex-col relative sm:border-[8px] sm:border-gray-900 ring-1 ring-black/5">
         
         {/* Modals & Overlays */}
         {showConfetti && <Confetti />}
@@ -1208,43 +1257,6 @@ export default function DatingApp() {
             />
         )}
 
-        {/* --- TOUR TOOLTIPS --- */}
-        {/* Home Tour */}
-        {showHomeTour && (
-            <>
-                <TourTooltip text="Find matches on the map!" position="top-16 right-28" arrow="top" color="bg-blue-600" />
-                <TourTooltip text="Swipe on a match to decide if you want to get to know them!" position="top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-                <TourTooltip text="View your notifications in the top" position="top-16 right-4" arrow="top" />
-                <TourTooltip text="Click learn more to learn more about your match" position="bottom-32 left-1/2 -translate-x-1/2" arrow="bottom" />
-                <TourTooltip text="Use the app navigation at the bottom to switch between pages!" position="bottom-20 left-1/2 -translate-x-1/2" arrow="bottom" />
-            </>
-        )}
-
-        {/* Matches Tour */}
-        {showMatchesTour && (
-            <>
-                <TourTooltip text="Wow you've already got some matches!" position="top-36 left-8" arrow="top" color="bg-purple-600" />
-                <TourTooltip text="You have new messages! View them now!" position="top-64 left-1/2 -translate-x-1/2" arrow="bottom" color="bg-pink-600" />
-            </>
-        )}
-
-        {/* Chat Tour */}
-        {showChatTour && (
-            <>
-                 <TourTooltip text="Customise your font, background, and personalise your chat!" position="top-16 right-16" arrow="top" color="bg-purple-600" />
-                 <TourTooltip text="Use the date planner to plan a date!" position="bottom-20 left-4" arrow="bottom" color="bg-pink-600" />
-                 <TourTooltip text="Go on dont be shy, send them a message?" position="bottom-20 right-4" arrow="bottom" color="bg-gray-800" />
-            </>
-        )}
-
-        {/* Map Tour */}
-        {showMapTour && (
-            <>
-                <TourTooltip text="Explore profiles near you on the map!" position="top-24 left-1/2 -translate-x-1/2" arrow="top" color="bg-blue-600" />
-                <TourTooltip text="Tap a pin to see who it is!" position="bottom-32 right-1/2 translate-x-1/2" arrow="bottom" />
-            </>
-        )}
-        
         {/* Match Overlay - Z-Index 100 to stay above stack (Z-30) */}
         {showMatchOverlay && (
           <div className="absolute inset-0 z-[100] bg-black/90 backdrop-blur-xl flex flex-col items-center justify-center animate-in fade-in duration-500 p-6 overflow-hidden">
@@ -1638,7 +1650,10 @@ export default function DatingApp() {
             </button>
           </nav>
         )}
+        </div>
+        {/* End Phone Frame */}
       </div>
+      {/* End Wrapper */}
     </div>
   );
 }
