@@ -1187,7 +1187,7 @@ export default function DatingApp() {
       `}</style>
 
       {/* Wrapper for phone + external tooltips */}
-      <div className="relative">
+      <div className="relative flex justify-center items-center">
         {/* --- EXTERNAL TOUR TOOLTIPS --- */}
         {/* Home Tour */}
         {showHomeTour && (
