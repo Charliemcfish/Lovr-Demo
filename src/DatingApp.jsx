@@ -225,16 +225,48 @@ const LovrLogo = ({ className, color = "brand" }) => (
 );
 
 const Splash = () => (
-  <div className={`absolute inset-0 z-[200] bg-white flex flex-col items-center justify-center animate-out fade-out duration-700 delay-[2800ms] fill-mode-forwards pointer-events-none`}>
-    <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-pink-100 to-transparent"></div>
-    <div className="relative animate-bounce">
-        <LovrLogo className="w-64" color="brand" />
+  <div className={`absolute inset-0 z-[200] bg-gradient-to-b from-white via-pink-50 to-pink-100 flex flex-col items-center justify-center animate-out fade-out duration-700 delay-[2800ms] fill-mode-forwards pointer-events-none overflow-hidden`}>
+    {/* Floating Hearts Background */}
+    <div className="absolute inset-0 pointer-events-none">
+      {[...Array(15)].map((_, i) => (
+        <div
+          key={i}
+          className="absolute"
+          style={{
+            left: `${5 + (i * 6.5)}%`,
+            animation: `floatUp ${3 + (i % 3)}s ease-in-out infinite`,
+            animationDelay: `${i * 0.2}s`,
+          }}
+        >
+          <Heart
+            fill={i % 3 === 0 ? "#db2777" : i % 3 === 1 ? "#ec4899" : "#f9a8d4"}
+            className="text-pink-400"
+            size={12 + (i % 4) * 6}
+            style={{ opacity: 0.4 + (i % 3) * 0.2 }}
+          />
+        </div>
+      ))}
     </div>
-    <p className="mt-4 text-pink-400 font-medium tracking-widest text-sm uppercase animate-pulse">Find Your Spark</p>
-    <div className="mt-8 flex gap-2">
-       <div className="w-3 h-3 bg-pink-500 rounded-full animate-bounce"></div>
-       <div className="w-3 h-3 bg-pink-400 rounded-full animate-bounce delay-100"></div>
-       <div className="w-3 h-3 bg-pink-300 rounded-full animate-bounce delay-200"></div>
+    <style>{`
+      @keyframes floatUp {
+        0% { transform: translateY(850px) rotate(0deg); opacity: 0; }
+        10% { opacity: 0.6; }
+        90% { opacity: 0.6; }
+        100% { transform: translateY(-50px) rotate(20deg); opacity: 0; }
+      }
+    `}</style>
+
+    {/* Centered Content */}
+    <div className="relative z-10 flex flex-col items-center justify-center">
+      <div className="animate-bounce">
+        <LovrLogo className="w-64 h-auto" color="brand" />
+      </div>
+      <p className="mt-4 text-pink-400 font-medium tracking-widest text-sm uppercase animate-pulse">Find Your Spark</p>
+      <div className="mt-8 flex gap-2">
+        <div className="w-3 h-3 bg-pink-500 rounded-full animate-bounce"></div>
+        <div className="w-3 h-3 bg-pink-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+        <div className="w-3 h-3 bg-pink-300 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+      </div>
     </div>
   </div>
 );
